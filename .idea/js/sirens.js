@@ -2,16 +2,13 @@ const sirensTableBodyId = 'sirensTableBody';
 
 document.addEventListener('DOMContentLoaded', loadSirens);
 
-console.log('sirens.js er loaded');
-
 async function loadSirens() {
-    console.log('loadSirens kaldt');
 
     const section = document.getElementById('sirens');
     section.classList.add('active');
 
     if (!section) {
-        console.error('Element med id="sirens" ikke fundet!');
+        console.error('Element not found');
         return;
     }
 
@@ -21,8 +18,8 @@ async function loadSirens() {
                 <tr>
                     <th>Latitude</th>
                     <th>Longitude</th>
-                    <th>Status (Active)</th>
-                    <th>Disabled</th>
+                    <th>Status</th>
+                    <th>Last Used</th>
                     <th>Options</th>
                 </tr>
             </thead>
@@ -33,13 +30,13 @@ async function loadSirens() {
             <label>Latitude: <input type="number" step="any" id="sirenLat" required></label><br/>
             <label>Longitude: <input type="number" step="any" id="sirenLon" required></label><br/>
             <label>Active: <input type="checkbox" id="sirenActive" checked></label><br/>
-            <label>Disabled: <input type="checkbox" id="sirenDisabled"></label><br/>
+            <label>Last Used: <input type="date" id="sirenLastUsed" checked></label><br/>
             <button type="submit" class="btn-primary">Create Siren</button>
         </form>`;
 
     const sirensTableBody = document.getElementById(sirensTableBodyId);
     if (!sirensTableBody) {
-        console.error('Element med id="sirensTableBody" ikke fundet!');
+        console.error('Element not found');
         return;
     }
 
@@ -58,18 +55,27 @@ async function loadSirens() {
         }
 
         sirens.forEach(siren => {
-            // Tjek om position findes
             if (!siren.position || typeof siren.position.latitude !== 'number' || typeof siren.position.longitude !== 'number') {
-                console.warn('Siren har ikke gyldig position:', siren);
+                console.warn('No position found', siren);
                 return;
             }
+
+            const lastUsedDate = new Date(siren.lastUsed).toLocaleString('da-DK', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+
+            });
+
+            const statusText = siren.active ? 'DANGER' : 'SAFE';
+            const statusClass = siren.active ? 'status-danger' : 'status-safe';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${siren.position.latitude.toFixed(5)}</td>
                 <td>${siren.position.longitude.toFixed(5)}</td>
-                <td>${siren.active ? 'Yes' : 'No'}</td>
-                <td>${siren.disabled ? 'Yes' : 'No'}</td>
+                <td><span class="${statusClass}">${statusText}</span></td>
+                    <td>${lastUsedDate}</td>
                 <td>
                     <button onclick="editSiren(${siren.id})" class="btn-secondary">Edit</button>
                     <button onclick="deleteSiren(${siren.id})" class="btn-danger">Delete</button>
@@ -85,7 +91,7 @@ async function loadSirens() {
     if (createForm) {
         createForm.addEventListener('submit', createSiren);
     } else {
-        console.error('Element med id="createSirenForm" ikke fundet!');
+        console.error('Error creating sirens');
     }
 }
 
@@ -95,27 +101,24 @@ async function createSiren(e) {
     const latInput = document.getElementById('sirenLat');
     const lonInput = document.getElementById('sirenLon');
     const activeInput = document.getElementById('sirenActive');
-    const disabledInput = document.getElementById('sirenDisabled');
 
-    if (!latInput || !lonInput || !activeInput || !disabledInput) {
-        alert('Form inputs ikke fundet!');
+    if (!latInput || !lonInput || !activeInput) {
+        alert('Form input not valid');
         return;
     }
 
     const lat = parseFloat(latInput.value);
     const lon = parseFloat(lonInput.value);
     const active = activeInput.checked;
-    const disabled = disabledInput.checked;
 
     if (isNaN(lat) || isNaN(lon)) {
-        alert('Latitude og Longitude skal være tal');
+        alert('Latitude and Longitude must be a number');
         return;
     }
 
     const sirenData = {
         position: { latitude: lat, longitude: lon },
         active,
-        disabled,
         lastUsed: new Date().toISOString()
     };
 
@@ -150,19 +153,20 @@ async function editSiren(id) {
     const lat = prompt('Enter new latitude:');
     const lon = prompt('Enter new longitude:');
     const active = confirm('Is the siren active? OK=Yes, Cancel=No');
-    const disabled = confirm('Is the siren disabled? OK=Yes, Cancel=No');
 
     if (!lat || !lon) return alert('Latitude and longitude must be entered');
+
+    const status = prompt('Enter status (e.g. SAFE or DANGER):');
+    if (!status) return alert('Status must be entered');
 
     const sirenData = {
         position: { latitude: parseFloat(lat), longitude: parseFloat(lon) },
         active,
-        disabled,
         lastUsed: new Date().toISOString()
     };
 
     try {
-        const res = await fetch(`http://localhost:8080/sirens/${id}`, {
+        const res = await fetch(`http://localhost:8080/sirens/${id}?status=${status}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(sirenData)

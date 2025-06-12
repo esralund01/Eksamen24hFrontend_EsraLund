@@ -237,3 +237,12 @@ h2 {
     font-size: 2rem;
     margin-top: 20px;
 }
+.status-safe {
+    color: green;
+    font-weight: bold;
+}
+
+.status-danger {
+    color: red;
+    font-weight: bold;
+}
