@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New fire</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<h2>Create new fire alarm</h2>
+<form id="newFireForm">
+  <label for="lat">Latitude:</label>
+  <input type="number" step="any" id="lat" required><br>
+
+  <label for="lon">Longitude:</label>
+  <input type="number" step="any" id="lon" required><br>
+
+  <button type="submit">🚨 Activate fire</button>
+  <button type="button" onclick="history.back()">Cancel</button>
+</form>
+
+<script src="js/newFire.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LA Fire Department</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+</head>
+<body>
+<h1>LA Fire Department - Live Overview</h1>
+
+<div id="map"></div>
+
+<div class="controls">
+    <button onclick="window.location.href='newFire.html'">🚨 Create new fire alert</button>
+    <button onclick="window.location.href='fires.html'">🔥 Close fire</button>
+    <button onclick="window.location.href='sirens.html'"> 🚨 Edit sirens</button>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script src="js/leafletMap.js"></script>
+
+
+</body>
+</html>
